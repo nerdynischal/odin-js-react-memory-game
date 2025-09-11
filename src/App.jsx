@@ -17,11 +17,18 @@ function App() {
   const [cards, setCards] = useState([]);
   const [clicked, setClicked] = useState([]);
   const [gameOver, setGameOver] = useState(false);
+  const [difficulty, setDifficulty] = useState("medium"); // default
 
   // Fetch Pokémon
   useEffect(() => {
     const fetchPokemon = async () => {
-      const res = await fetch("https://pokeapi.co/api/v2/pokemon?limit=12");
+      let limit = 12; // medium default
+      if (difficulty === "easy") limit = 6;
+      if (difficulty === "hard") limit = 20;
+
+      const res = await fetch(
+        `https://pokeapi.co/api/v2/pokemon?limit=${limit}`
+      );
       const data = await res.json();
 
       const pokemon = data.results.map((poke, index) => ({
@@ -36,8 +43,16 @@ function App() {
     };
 
     fetchPokemon();
-  }, []);
+  }, [difficulty]); // refetch when difficulty changes
 
+  // Reset game when difficulty changes
+  useEffect(() => {
+    setScore(0);
+    setClicked([]);
+    setGameOver(false);
+  }, [difficulty]);
+
+  // Handle card click
   const handleCardClick = (id) => {
     if (clicked.includes(id)) {
       setGameOver(true); // Trigger game over
@@ -50,6 +65,7 @@ function App() {
     }
   };
 
+  // Restart game
   const restartGame = () => {
     setScore(0);
     setClicked([]);
@@ -60,6 +76,48 @@ function App() {
   return (
     <div>
       <h1>Memory Game</h1>
+      <div style={{ marginBottom: "20px" }}>
+        <button
+          onClick={() => setDifficulty("easy")}
+          style={{
+            margin: "5px",
+            padding: "8px 16px",
+            cursor: "pointer",
+            borderRadius: "6px",
+            border: "1px solid gray",
+            backgroundColor: difficulty === "easy" ? "lightgreen" : "white",
+          }}
+        >
+          Easy
+        </button>
+        <button
+          onClick={() => setDifficulty("medium")}
+          style={{
+            margin: "5px",
+            padding: "8px 16px",
+            cursor: "pointer",
+            borderRadius: "6px",
+            border: "1px solid gray",
+            backgroundColor: difficulty === "medium" ? "lightgreen" : "white",
+          }}
+        >
+          Medium
+        </button>
+        <button
+          onClick={() => setDifficulty("hard")}
+          style={{
+            margin: "5px",
+            padding: "8px 16px",
+            cursor: "pointer",
+            borderRadius: "6px",
+            border: "1px solid gray",
+            backgroundColor: difficulty === "hard" ? "lightgreen" : "white",
+          }}
+        >
+          Hard
+        </button>
+      </div>
+
       <Scoreboard score={score} bestScore={bestScore} />
 
       {gameOver ? (

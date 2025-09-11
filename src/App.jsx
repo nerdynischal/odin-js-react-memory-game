@@ -16,7 +16,8 @@ function App() {
   const [bestScore, setBestScore] = useState(0);
   const [cards, setCards] = useState([]);
   const [clicked, setClicked] = useState([]);
-  const [gameOver, setGameOver] = useState(false);
+  //const [gameOver, setGameOver] = useState(false);
+  const [gameStatus, setGameStatus] = useState("playing");
   const [difficulty, setDifficulty] = useState("medium"); // default
 
   // Fetch Pokémon
@@ -49,19 +50,25 @@ function App() {
   useEffect(() => {
     setScore(0);
     setClicked([]);
-    setGameOver(false);
+    setGameStatus("playing");
   }, [difficulty]);
 
   // Handle card click
   const handleCardClick = (id) => {
     if (clicked.includes(id)) {
-      setGameOver(true); // Trigger game over
+      setGameStatus("lost");
     } else {
       const newScore = score + 1;
       setScore(newScore);
       if (newScore > bestScore) setBestScore(newScore);
-      setClicked([...clicked, id]);
-      setCards(shuffleArray(cards));
+      const newClicked = [...clicked, id];
+      setClicked(newClicked);
+
+      if (newClicked.length === cards.length) {
+        setGameStatus("won");
+      } else {
+        setCards(shuffleArray(cards));
+      }
     }
   };
 
@@ -69,7 +76,7 @@ function App() {
   const restartGame = () => {
     setScore(0);
     setClicked([]);
-    setGameOver(false);
+    setGameStatus("playing");
     setCards(shuffleArray(cards));
   };
 
@@ -120,9 +127,10 @@ function App() {
 
       <Scoreboard score={score} bestScore={bestScore} />
 
-      {gameOver ? (
+      {gameStatus !== "playing" ? (
         <div style={{ textAlign: "center", marginTop: "20px" }}>
-          <h2>Game Over!</h2>
+          {gameStatus === "lost" && <h2>Game Over!</h2>}
+          {gameStatus === "won" && <h2>🎉 You Win! 🎉</h2>}
           <button
             onClick={restartGame}
             style={{

@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Scoreboard from "./components/Scoreboard";
 import Card from "./components/Card";
 import "./App.css";
 
+//We’ll use Fisher-Yates shuffle:
 function shuffleArray(array) {
   return [...array]
     .map((value) => ({ value, sort: Math.random() }))
@@ -10,32 +11,49 @@ function shuffleArray(array) {
     .map(({ value }) => value);
 }
 
-const dummyCards = [
-  { id: 1, name: "Card 1" },
-  { id: 2, name: "Card 2" },
-  { id: 3, name: "Card 3" },
-  { id: 4, name: "Card 4" },
-];
-
 function App() {
   const [score, setScore] = useState(0);
   const [bestScore, setBestScore] = useState(0);
-  const [cards, setCards] = useState(dummyCards);
+  const [cards, setCards] = useState([]);
   const [clicked, setClicked] = useState([]);
+  const [gameOver, setGameOver] = useState(false);
+
+  // Fetch Pokémon
+  useEffect(() => {
+    const fetchPokemon = async () => {
+      const res = await fetch("https://pokeapi.co/api/v2/pokemon?limit=12");
+      const data = await res.json();
+
+      const pokemon = data.results.map((poke, index) => ({
+        id: index + 1,
+        name: poke.name,
+        image: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${
+          index + 1
+        }.png`,
+      }));
+
+      setCards(pokemon);
+    };
+
+    fetchPokemon();
+  }, []);
 
   const handleCardClick = (id) => {
     if (clicked.includes(id)) {
-      // Reset score
-      setScore(0);
-      setClicked([]);
+      setGameOver(true); // Trigger game over
     } else {
       const newScore = score + 1;
       setScore(newScore);
       if (newScore > bestScore) setBestScore(newScore);
       setClicked([...clicked, id]);
+      setCards(shuffleArray(cards));
     }
+  };
 
-    // Shuffle after each click
+  const restartGame = () => {
+    setScore(0);
+    setClicked([]);
+    setGameOver(false);
     setCards(shuffleArray(cards));
   };
 
@@ -43,11 +61,39 @@ function App() {
     <div>
       <h1>Memory Game</h1>
       <Scoreboard score={score} bestScore={bestScore} />
-      <div style={{ display: "flex" }}>
-        {cards.map((card) => (
-          <Card key={card.id} card={card} onClick={handleCardClick} />
-        ))}
-      </div>
+
+      {gameOver ? (
+        <div style={{ textAlign: "center", marginTop: "20px" }}>
+          <h2>Game Over!</h2>
+          <button
+            onClick={restartGame}
+            style={{
+              padding: "10px 20px",
+              fontSize: "16px",
+              cursor: "pointer",
+              borderRadius: "6px",
+              border: "none",
+              backgroundColor: "tomato",
+              color: "white",
+            }}
+          >
+            Restart
+          </button>
+        </div>
+      ) : (
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(4, 1fr)",
+            gap: "10px",
+            marginTop: "20px",
+          }}
+        >
+          {cards.map((card) => (
+            <Card key={card.id} card={card} onClick={handleCardClick} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

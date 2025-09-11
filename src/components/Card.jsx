@@ -5,12 +5,15 @@ function Card({ card, onClick }) {
       onClick={() => onClick(card.id)}
       style={{
         border: "1px solid black",
-        padding: "20px",
-        margin: "10px",
+        borderRadius: "8px",
+        padding: "10px",
+        textAlign: "center",
         cursor: "pointer",
+        backgroundColor: "white",
       }}
     >
-      {card.name}
+      <img src={card.image} alt={card.name} />
+      <p>{card.name}</p>
     </div>
   );
 }

@@ -1,17 +1,8 @@
+import "./../styles/Card.css";
+
 function Card({ card, onClick }) {
   return (
-    <div
-      className="card"
-      onClick={() => onClick(card.id)}
-      style={{
-        border: "1px solid black",
-        borderRadius: "8px",
-        padding: "10px",
-        textAlign: "center",
-        cursor: "pointer",
-        backgroundColor: "white",
-      }}
-    >
+    <div className="card" onClick={() => onClick(card.id)}>
       <img src={card.image} alt={card.name} />
       <p>{card.name}</p>
     </div>

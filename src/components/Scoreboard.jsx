@@ -1,3 +1,5 @@
+import "./../styles/Scoreboard.css";
+
 // src/components/Scoreboard.jsx
 function Scoreboard({ score, bestScore }) {
   return (

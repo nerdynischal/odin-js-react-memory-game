@@ -5,7 +5,7 @@ Click each Pokémon only once — if you click the same card twice, you lose! {P
 
 ## 🚀 Live Demo
 
-👉 [View on Vercel](https://your-vercel-app-url.vercel.app)
+👉 [View on Vercel](https://odin-js-react-memory-game.vercel.app/)
 
 ---
 

@@ -1,19 +1,21 @@
+.game-status h2 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+  color: #1976d2;
+  animation: popIn 0.6s ease;
+}
+
 .game-status {
   text-align: center;
-  margin-top: 20px;
 }
 
-.restart-btn {
-  padding: 10px 20px;
-  font-size: 16px;
-  cursor: pointer;
-  border-radius: 6px;
-  border: none;
-  background-color: tomato;
-  color: white;
-  transition: background-color 0.2s;
-}
-
-.restart-btn:hover {
-  background-color: darkred;
+@keyframes popIn {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }

@@ -22,6 +22,8 @@ function App() {
   const [clicked, setClicked] = useState([]);
   const [gameStatus, setGameStatus] = useState("playing");
   const [difficulty, setDifficulty] = useState("medium"); // default
+  const [shake, setShake] = useState(false);
+  const [flip, setFlip] = useState(false);
 
   // Fetch Pokémon
   useEffect(() => {
@@ -44,6 +46,7 @@ function App() {
       }));
 
       setCards(pokemon);
+      setFlip((prev) => !prev); // toggle instead of timeout
     };
 
     fetchPokemon();
@@ -59,7 +62,12 @@ function App() {
   // Handle card click
   const handleCardClick = (id) => {
     if (clicked.includes(id)) {
-      setGameStatus("lost");
+      setShake(true);
+      // Wait for the shake animation to finish before showing Game Over
+      setTimeout(() => {
+        setShake(false);
+        setGameStatus("lost");
+      }, 500); // matches animation duration
     } else {
       const newScore = score + 1;
       setScore(newScore);
@@ -71,6 +79,7 @@ function App() {
         setGameStatus("won");
       } else {
         setCards(shuffleArray(cards));
+        setFlip((prev) => !prev); // toggle instead of timeout
       }
     }
   };
@@ -81,6 +90,7 @@ function App() {
     setClicked([]);
     setGameStatus("playing");
     setCards(shuffleArray(cards));
+    setFlip((prev) => !prev); // toggle instead of timeout
   };
 
   return (
@@ -95,7 +105,12 @@ function App() {
       {gameStatus !== "playing" ? (
         <GameStatus status={gameStatus} onRestart={restartGame} />
       ) : (
-        <CardGrid cards={cards} onCardClick={handleCardClick} />
+        <CardGrid
+          cards={cards}
+          onCardClick={handleCardClick}
+          shake={shake}
+          flip={flip}
+        />
       )}
     </>
   );
